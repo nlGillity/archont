@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include "shader.h"
 #include <iostream>
 using namespace std;
 
@@ -116,53 +116,8 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	// VERTEX SHADER
-	// Созданем shader object (vertex)
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// Прикрепляем код вершинного шейдера
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	// Компиляция вершинного шейдера
-	glCompileShader(vertexShader);
-	// Проверка компиляции
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "[ERROR] Vertex shader не был скомпилирован: " << infoLog << endl;
-	}
-
-	// FRAGMENT SHADER
-	// Созданем shader object (fragment)
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// Прикрепляем код вершинного шейдера
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	// Компиляция вершинного шейдера
-	glCompileShader(fragmentShader);
-	// Проверка компиляции
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		cout << "[ERROR] Fragment shader не был скомпилирован: " << infoLog << endl;
-	}
-
-	// SHADER PROGRAM
-	// Создаем program object
-	unsigned int shaderProgram = glCreateProgram();
-	// Связываем шейдеры с шейдерной программой
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	// Проверка линковки шейдерной программы к OpenGL
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		cout << "[ERROR] Shader program не была cформирована: " << infoLog << endl;
-	}
-
-	// Свое они уже изжили
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	// SHADER
+	Shader shader("vertex.vert", "fragment.frag");
 
 	// ---------------------------------------------------------------
 
@@ -171,13 +126,7 @@ int main() {
 		// Создание заднего буфера (color buffer'а) для рендеринга
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
-		float timeValue = glfwGetTime();
-		float redOscillation = sin(2 * (timeValue)+3.14 / 2) + 1.0f;
-		float greenOscillation = sin(2 * (timeValue)) + 1.0f;
-		float blueOscillation = sin(2 * (timeValue)+3.14) + 1.0f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "outColor");
-		glUniform4f(vertexColorLocation, redOscillation, greenOscillation, blueOscillation, 1.0f);
+		shader.use();
 
 		// Отрисовка треугольника
 		glBindVertexArray(VAO);
@@ -192,7 +141,6 @@ int main() {
 	// Освобождение памяти (не обязательно)
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
 
 	glfwTerminate();
 	return 0;
