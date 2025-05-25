@@ -9,7 +9,8 @@ const int WINDOW_HEIGHT = 600;
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-int main() {
+int main()
+{
 	// ИНИЦИАЛИЗАЦИЯ ОКНА ПРОГРАММЫ
 	glfwInit();
 	/**
@@ -25,7 +26,8 @@ int main() {
 
 	// СОЗДАНИЕ ОКНА ПРОГРАММЫ
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Test", NULL, NULL);
-	if (window == nullptr) {
+	if (window == nullptr)
+	{
 		cout << "[ERROR] Не удалось создать окно программы" << endl;
 		glfwTerminate();
 		return 1;
@@ -34,7 +36,8 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 	// ИНИЦИАЛИЗАЦИЯ GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
 		cout << "[ERROR] Не удалось инициализировать GLAD" << endl;
 		return 1;
 	}
@@ -46,17 +49,15 @@ int main() {
 	// ---------------------------------------------------------------
 
 	// Вершины треугольника
-	float vertices[] = {
+	float vertices[] = 
+	{
 		// Координаты вершин:	// Цвет вершин:
 		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // левая нижнняя
 		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f, // правая нижняя
 		 0.0f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f  // верхняя
-
 	};
 	// Индексы выршин (поряд их отрисовки)
-	unsigned int indices[] = {
-		0, 1, 2
-	};
+	unsigned int indices[] = { 0, 1, 2 };
 
 	// VAO
 	// Создаем новый vertex array object
@@ -107,7 +108,8 @@ int main() {
 	// ---------------------------------------------------------------
 
 	// ЦИКЛ РЕНДЕРИНГА
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window))
+	{
 		// Создание заднего буфера (color buffer'а) для рендеринга
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -131,6 +133,7 @@ int main() {
 	return 0;
 }
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
 	glViewport(0, 0, width, height);
 }

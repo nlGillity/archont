@@ -7,7 +7,8 @@
 #include <sstream>
 #include <iostream>
 
-class Shader {
+class Shader 
+{
 private:
 	GLuint compileShader(const char* shaderCode, GLenum type);
 	void createProgram(GLuint vertexShader, GLuint fragmentShader);
@@ -16,9 +17,9 @@ public:
 	GLuint ID;
 
 	Shader(const char* vertexPath, const char* fragmentPath);
-
 	void use();
 
+	// Установка значений для uniform-переменных
 	void setInt(const std::string& name, int value);
 	void setFloat(const std::string& name, float value);
 	void setBool (const std::string& name, bool value);

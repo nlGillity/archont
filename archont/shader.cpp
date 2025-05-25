@@ -10,11 +10,13 @@ GLuint Shader::compileShader(const char* shaderCode, GLenum type)
 	int success;
 	char infoLog[512];
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
+	if (!success)
+	{
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
 
 		std::string shaderName;
-		switch (type) {
+		switch (type)
+		{
 			case GL_VERTEX_SHADER:
 				shaderName = "Vertex Shader";
 			case GL_FRAGMENT_SHADER:
@@ -39,7 +41,8 @@ void Shader::createProgram(GLuint vertexShader, GLuint fragmentShader)
 	int success;
 	char infoLog[512];
 	glGetProgramiv(ID, GL_LINK_STATUS, &success);
-	if (!success) {
+	if (!success)
+	{
 		glGetProgramInfoLog(ID, 512, NULL, infoLog);
 		std::cout << "[SHADER:ERROR] Shader program не была cформирована: " << infoLog << std::endl;
 	}
@@ -56,7 +59,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
 	vFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	try {
+	try
+	{
 		vFile.open(vertexPath);
 		fFile.open(fragmentPath);
 
@@ -70,7 +74,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 		vCode = vStream.str();
 		fCode = fStream.str();
 	}
-	catch (std::ifstream::failure e) {
+	catch (std::ifstream::failure e)
+	{
 		std::cout << "[SHADER:ERROR] Не удалось прочитать шейдерные файлы. " << std::endl;
 	}
 
@@ -88,26 +93,32 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::use() {
+void Shader::use()
+{
 	glUseProgram(ID);
 }
 
-void Shader::setInt(const std::string& name, int value) {
+void Shader::setInt(const std::string& name, int value)
+{
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::setFloat(const std::string& name, float value) {
+void Shader::setFloat(const std::string& name, float value)
+{
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::setBool(const std::string& name, bool value) {
+void Shader::setBool(const std::string& name, bool value)
+{
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
-void Shader::setVec3f(const std::string& name, float xvalue, float yvalue, float zvalue) {
+void Shader::setVec3f(const std::string& name, float xvalue, float yvalue, float zvalue)
+{
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), xvalue, yvalue, zvalue);
 }
 
-void Shader::setVec4f(const std::string& name, float xvalue, float yvalue, float zvalue, float wvalue) {
+void Shader::setVec4f(const std::string& name, float xvalue, float yvalue, float zvalue, float wvalue)
+{
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), xvalue, yvalue, zvalue, wvalue);
 }
