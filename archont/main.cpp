@@ -12,7 +12,7 @@ using namespace glm;
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void framebufferSizeCallback(GLFWwindow* window, GLint width, GLint height);
 
 int main()
 {
@@ -54,7 +54,7 @@ int main()
 	// ---------------------------------------------------------------
 
 	// Вершины треугольника
-	float vertices[] = 
+	GLfloat vertices[] = 
 	{
 		// Координаты вершин:	// Цвет вершин:
 		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // левая нижнняя
@@ -62,17 +62,17 @@ int main()
 		 0.0f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f  // верхняя
 	};
 	// Индексы выршин (поряд их отрисовки)
-	unsigned int indices[] = { 0, 1, 2 };
+	GLuint indices[] = { 0, 1, 2 };
 
 	// VAO
 	// Создаем новый vertex array object
-	unsigned int VAO;
+	GLuint VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
 	// VBO
 	// Создаем новый буфер vertex buffer object
-	unsigned int VBO;
+	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	// Привызываем его к GL_ARRAY_BUFFER
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -81,7 +81,7 @@ int main()
 
 	// EBO
 	// Создаем новый буфер element buffer object
-	unsigned int EBO;
+	GLuint EBO;
 	glGenBuffers(1, &EBO);
 	// Привызываем его к GL_ELEMENT_ARRAY_BUFFER
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -120,6 +120,11 @@ int main()
 
 		shader.use();
 
+		// Обновление матрицы вращения
+		mat4 transform = mat4(1.0f);
+		transform = rotate(transform, (float)abs(glfwGetTime()), vec3(1.0f, 0.0f, 0.0f));
+		shader.setMat4f("transform", glm::value_ptr(transform));
+
 		// Отрисовка треугольника
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
@@ -138,7 +143,7 @@ int main()
 	return 0;
 }
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void framebufferSizeCallback(GLFWwindow* window, GLint width, GLint height)
 {
 	glViewport(0, 0, width, height);
 }
