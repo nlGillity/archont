@@ -1,7 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include "shader.h"
+#include "entity.h"
+
 #include <iostream>
+#include <vector>
 using namespace std;
 
 #include <glm/glm.hpp>
@@ -53,62 +57,20 @@ int main()
 
 	// ---------------------------------------------------------------
 
-	// Вершины треугольника
-	GLfloat vertices[] = 
-	{
-		// Координаты вершин:	// Цвет вершин:
-		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // левая нижнняя
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f, // правая нижняя
-		 0.0f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f  // верхняя
-	};
-	// Индексы выршин (поряд их отрисовки)
-	GLuint indices[] = { 0, 1, 2 };
-
-	// VAO
-	// Создаем новый vertex array object
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// VBO
-	// Создаем новый буфер vertex buffer object
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	// Привызываем его к GL_ARRAY_BUFFER
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// Копируем данные (коодринаты вершин) в vertex buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// EBO
-	// Создаем новый буфер element buffer object
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	// Привызываем его к GL_ELEMENT_ARRAY_BUFFER
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// Копируем данные (порядок отрисовки вершин) в vertex buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	/** РАЗМЕТКА АТТРИБУТОВ
-		index: индекс аттрибута (location = 0)
-		size: размер аттрибута (vec3)
-		type: тип данных (float)
-		normilized: нормировка данных (false, т.к. координаты уже от -1 до 1)
-		stride: размер сдвига к аттрибутам следующей вершины
-		pointer: начальное смещение до первого аттрибута данного индекса
-	**/
-	// Аттрибут позиции
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// Аттрибут цвета
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	// SHADER
 	Shader shader("vertex.vert", "fragment.frag");
+	
+	// ENTITY
+	vector<vertex> vertices =
+	{
+		vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f)), // левая нижнняя
+		vertex(vec3(0.5f, -0.5f, 0.0f),  vec3(0.0f, 1.0f, 0.0f)), // правая нижняя
+		vertex(vec3(0.0f,  0.5f, 0.0f),  vec3(0.0f, 0.0f, 1.0f))  // верхняя
+	};
+	vector<GLuint> indices = { 0, 1, 2 };
+
+	Entity triangle(vertices, indices);
+	triangle.linkShader(&shader);
 
 	// ---------------------------------------------------------------
 
@@ -118,16 +80,9 @@ int main()
 		// Создание заднего буфера (color buffer'а) для рендеринга
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		shader.use();
-
-		// Обновление матрицы вращения
-		mat4 transform = mat4(1.0f);
-		transform = rotate(transform, (float)abs(glfwGetTime()), vec3(1.0f, 0.0f, 0.0f));
-		shader.setMat4f("transform", glm::value_ptr(transform));
-
 		// Отрисовка треугольника
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
+		triangle.rotate((float)abs(glfwGetTime()), vec3(1.0f, 0.0f, 0.0f));
+		triangle.render(GL_TRIANGLES, GL_UNSIGNED_INT);
 
 		// Проверка различных вызовов от пользователя (клавиатура, мышка)
 		glfwPollEvents();
@@ -136,8 +91,8 @@ int main()
 	}
 
 	// Освобождение памяти (не обязательно)
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	/*glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);*/
 
 	glfwTerminate();
 	return 0;

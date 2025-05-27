@@ -19,12 +19,13 @@ public:
 
 	Shader(const char* vertexPath, const char* fragmentPath);
 	void use();
+	void unuse();
 
 	// Установка значений для uniform-переменных
-	void setInt(const std::string& name, GLint value);
-	void setFloat(const std::string& name, GLfloat value);
-	void setBool (const std::string& name, bool value);
-	void setVec3f(const std::string& name, glm::vec3 vec);
-	void setVec4f(const std::string& name, glm::vec4 vec);
-	void setMat4f(const std::string& name, GLfloat* adrmat);
+	void setUniform(const std::string& name, GLint value);
+	void setUniform(const std::string& name, GLfloat value);
+	void setUniform(const std::string& name, bool value);
+	void setUniform(const std::string& name, glm::vec3 value);
+	void setUniform(const std::string& name, glm::vec4 value);
+	void setUniform(const std::string& name, GLfloat* mat);
 };
