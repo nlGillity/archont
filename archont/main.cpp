@@ -34,7 +34,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// СОЗДАНИЕ ОКНА ПРОГРАММЫ
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Test", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "ArchEngine", NULL, NULL);
 	if (window == nullptr)
 	{
 		cout << "[ERROR] Не удалось создать окно программы" << endl;
@@ -55,12 +55,14 @@ int main()
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+	glEnable(GL_DEPTH_TEST);
+
 	// ---------------------------------------------------------------
 
 	// SHADER
 	Shader shader("vertex.vert", "fragment.frag");
 	
-	// ENTITY
+	// TRIANGLE
 	vector<vertex> vertices =
 	{
 		vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f)), // левая нижнняя
@@ -72,27 +74,77 @@ int main()
 	Entity triangle(vertices, indices);
 	triangle.linkShader(&shader);
 
+	// PLANAR
+	const int RESOLUTION_X = 100;
+	const int RESOLUTION_Z = 100;
+
+	vector<vertex> planarVertices;
+	for (int z = 0; z < RESOLUTION_Z; z++) {
+		for (int x = 0; x < RESOLUTION_X; x++) {
+			planarVertices.push_back(vertex(
+				vec3(2 * float(x) / RESOLUTION_X - 1, 0.0f, 2 * float(z) / RESOLUTION_Z - 1),
+				vec3(1.0f, 1.0f, 1.0f))
+			);
+		}
+	}
+
+	vector<GLuint> planarIndices;
+	for (int z = 0; z < RESOLUTION_Z - 1; z++) {
+		for (int x = 0; x < RESOLUTION_X - 1; x++) {
+			GLuint current = z * RESOLUTION_X + x;
+			GLuint future = (z + 1) * RESOLUTION_X + x;
+
+			GLuint i0 = current;
+			GLuint i1 = current + 1;
+			GLuint i2 = future;
+			GLuint i3 = future + 1;
+
+			if ((x + z) % 2) {
+				planarIndices.push_back(i0); planarIndices.push_back(i1); planarIndices.push_back(i3);
+				planarIndices.push_back(i3); planarIndices.push_back(i2); planarIndices.push_back(i0);
+			}
+			else {
+				planarIndices.push_back(i0); planarIndices.push_back(i2); planarIndices.push_back(i1);
+				planarIndices.push_back(i1); planarIndices.push_back(i3); planarIndices.push_back(i2);
+			}
+		}
+	}
+
+	Entity planar(planarVertices, planarIndices);
+	planar.linkShader(&shader);
+
 	// ---------------------------------------------------------------
 
-	// ЦИКЛ РЕНДЕРИНГА
+	shader.use();
+	// Настройка uniform-переменных
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
+	view = glm::rotate(view, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+
+	shader.setUniform("view", glm::value_ptr(view));
+	shader.setUniform("projection", glm::value_ptr(projection));
+
+	// ЦИКЛ РЕНДЕРИНГА	
 	while (!glfwWindowShouldClose(window))
 	{
 		// Создание заднего буфера (color buffer'а) для рендеринга
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Отрисовка треугольника
-		triangle.rotate((float)abs(glfwGetTime()), vec3(1.0f, 0.0f, 0.0f));
-		triangle.render(GL_TRIANGLES, GL_UNSIGNED_INT);
+		// Рендер плоскости
+		shader.setUniform("time", (float)glfwGetTime());
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		planar.rotate(5 * glfwGetTime(), vec3(0.0f, 1.0f, 0.0f));
+		planar.render(GL_TRIANGLES, GL_UNSIGNED_INT);
 
 		// Проверка различных вызовов от пользователя (клавиатура, мышка)
 		glfwPollEvents();
 		// Смена color buffer'ов (обновление цвета каждого пикселя)
 		glfwSwapBuffers(window);
 	}
-
-	// Освобождение памяти (не обязательно)
-	/*glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);*/
 
 	glfwTerminate();
 	return 0;

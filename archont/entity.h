@@ -38,6 +38,6 @@ public:
 	void linkShader(Shader* shader);
 	void render(GLenum mode, GLenum type);
 
-	void rotate(float rad, glm::vec3 axis);
+	void rotate(float degree, glm::vec3 axis);
 	void translate(glm::vec3 direction);
 };

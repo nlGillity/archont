@@ -51,7 +51,6 @@ void Entity::linkShader(Shader* shader)
 
 void Entity::render(GLenum mode, GLenum type)
 {
-	this->shader->use();
 	this->shader->setUniform("transform", glm::value_ptr(transform));
 
 	glBindVertexArray(this->VAO);
@@ -59,12 +58,11 @@ void Entity::render(GLenum mode, GLenum type)
 
 	this->transform = glm::mat4(1.0f);
 	glBindVertexArray(0);
-	this->shader->unuse();
 }
 
-void Entity::rotate(float rad, glm::vec3 axis)
+void Entity::rotate(float degree, glm::vec3 axis)
 {
-	transform = glm::rotate(transform, rad, axis);
+	transform = glm::rotate(transform, glm::radians(degree), axis);
 }
 
 void Entity::translate(glm::vec3 direction)
