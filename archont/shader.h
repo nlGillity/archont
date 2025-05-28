@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -21,7 +21,7 @@ public:
 	void use();
 	void unuse();
 
-	// Установка значений для uniform-переменных
+	// РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РґР»СЏ uniform-РїРµСЂРµРјРµРЅРЅС‹С…
 	void setUniform(const std::string& name, GLint value);
 	void setUniform(const std::string& name, GLfloat value);
 	void setUniform(const std::string& name, bool value);
