@@ -1,4 +1,4 @@
-п»ї#include "entity.h"
+#include "entity.h"
 
 Entity::Entity(std::vector<vertex> &vertices, std::vector<GLuint> &indices) :
 	transform(mat4(1.0f)), shader(nullptr)
@@ -12,27 +12,27 @@ Entity::Entity(std::vector<vertex> &vertices, std::vector<GLuint> &indices) :
 
 	// Vertex Buffer Object
 	glGenBuffers(1, &this->VBO);
-	// РџСЂРёРІС‹Р·С‹РІР°РµРј РµРіРѕ Рє GL_ARRAY_BUFFER
+	// Привызываем его к GL_ARRAY_BUFFER
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	// РљРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ (Р°С‚СЂРёР±СѓС‚С‹) РІ vertex buffer
+	// Копируем данные (атрибуты) в vertex buffer
 	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(vertex), &this->vertices[0], GL_STATIC_DRAW);
 
 	// Element Buffer Object
 	glGenBuffers(1, &this->EBO);
-	// РџСЂРёРІС‹Р·С‹РІР°РµРј РµРіРѕ Рє GL_ELEMENT_ARRAY_BUFFER
+	// Привызываем его к GL_ELEMENT_ARRAY_BUFFER
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	// РљРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Рµ (РїРѕСЂСЏРґРѕРє РѕС‚СЂРёСЃРѕРІРєРё РІРµСЂС€РёРЅ) РІ element buffer
+	// Копируем данные (порядок отрисовки вершин) в element buffer
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), &this->indices[0], GL_STATIC_DRAW);
 
-	// Р РђР—РњР•РўРљРђ РђРўР РР‘РЈРўРћР’
-	// РђС‚С‚СЂРёР±СѓС‚ РїРѕР·РёС†РёРё
+	// РАЗМЕТКА АТРИБУТОВ
+	// Аттрибут позиции
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
 	glEnableVertexAttribArray(0);
-	// РђС‚С‚СЂРёР±СѓС‚ С†РІРµС‚Р°
+	// Аттрибут цвета
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, color));
 	glEnableVertexAttribArray(1);
 
-	// РћС‚РєСЂРµРїР»СЏРµРјСЃСЏ РѕС‚ VBO, VAO, EBO
+	// Открепляемся от VBO, VAO, EBO
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
