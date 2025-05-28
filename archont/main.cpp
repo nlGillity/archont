@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+п»ї#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
@@ -20,38 +20,38 @@ void framebufferSizeCallback(GLFWwindow* window, GLint width, GLint height);
 
 int main()
 {
-	// ИНИЦИАЛИЗАЦИЯ ОКНА ПРОГРАММЫ
+	// РРќРР¦РРђР›РР—РђР¦РРЇ РћРљРќРђ РџР РћР“Р РђРњРњР«
 	glfwInit();
 	/**
-		КОНФИГУРАЦИЯ ОКНА ПРОГРАММЫ
-		Полный список параметроы:
+		РљРћРќР¤РР“РЈР РђР¦РРЇ РћРљРќРђ РџР РћР“Р РђРњРњР«
+		РџРѕР»РЅС‹Р№ СЃРїРёСЃРѕРє РїР°СЂР°РјРµС‚СЂРѕС‹:
 			https://www.glfw.org/docs/latest/window.html#window_hints
 	**/
-	// Для совместимости со старными драйверами используем min возможную версию OpenGL 3.3
+	// Р”Р»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё СЃРѕ СЃС‚Р°СЂРЅС‹РјРё РґСЂР°Р№РІРµСЂР°РјРё РёСЃРїРѕР»СЊР·СѓРµРј min РІРѕР·РјРѕР¶РЅСѓСЋ РІРµСЂСЃРёСЋ OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Используем более низкоуровнений инструментарий OpenGL (Core)
+	// РСЃРїРѕР»СЊР·СѓРµРј Р±РѕР»РµРµ РЅРёР·РєРѕСѓСЂРѕРІРЅРµРЅРёР№ РёРЅСЃС‚СЂСѓРјРµРЅС‚Р°СЂРёР№ OpenGL (Core)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// СОЗДАНИЕ ОКНА ПРОГРАММЫ
+	// РЎРћР—Р”РђРќРР• РћРљРќРђ РџР РћР“Р РђРњРњР«
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "ArchEngine", NULL, NULL);
 	if (window == nullptr)
 	{
-		cout << "[ERROR] Не удалось создать окно программы" << endl;
+		cout << "[ERROR] РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РѕРєРЅРѕ РїСЂРѕРіСЂР°РјРјС‹" << endl;
 		glfwTerminate();
 		return 1;
 	}
-	// Создаем контекст для OpenGL
+	// РЎРѕР·РґР°РµРј РєРѕРЅС‚РµРєСЃС‚ РґР»СЏ OpenGL
 	glfwMakeContextCurrent(window);
 
-	// ИНИЦИАЛИЗАЦИЯ GLAD
+	// РРќРР¦РРђР›РР—РђР¦РРЇ GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		cout << "[ERROR] Не удалось инициализировать GLAD" << endl;
+		cout << "[ERROR] РќРµ СѓРґР°Р»РѕСЃСЊ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ GLAD" << endl;
 		return 1;
 	}
 
-	// ОБЛАСТЬ РЕНДЕРИНГА для OpenGL (на все окно программы)
+	// РћР‘Р›РђРЎРўР¬ Р Р•РќР”Р•Р РРќР“Рђ РґР»СЏ OpenGL (РЅР° РІСЃРµ РѕРєРЅРѕ РїСЂРѕРіСЂР°РјРјС‹)
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
@@ -65,9 +65,9 @@ int main()
 	// TRIANGLE
 	vector<vertex> vertices =
 	{
-		vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f)), // левая нижнняя
-		vertex(vec3(0.5f, -0.5f, 0.0f),  vec3(0.0f, 1.0f, 0.0f)), // правая нижняя
-		vertex(vec3(0.0f,  0.5f, 0.0f),  vec3(0.0f, 0.0f, 1.0f))  // верхняя
+		vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f)), // Р»РµРІР°СЏ РЅРёР¶РЅРЅСЏСЏ
+		vertex(vec3(0.5f, -0.5f, 0.0f),  vec3(0.0f, 1.0f, 0.0f)), // РїСЂР°РІР°СЏ РЅРёР¶РЅСЏСЏ
+		vertex(vec3(0.0f,  0.5f, 0.0f),  vec3(0.0f, 0.0f, 1.0f))  // РІРµСЂС…РЅСЏСЏ
 	};
 	vector<GLuint> indices = { 0, 1, 2 };
 
@@ -116,7 +116,7 @@ int main()
 	// ---------------------------------------------------------------
 
 	shader.use();
-	// Настройка uniform-переменных
+	// РќР°СЃС‚СЂРѕР№РєР° uniform-РїРµСЂРµРјРµРЅРЅС‹С…
 	glm::mat4 view = glm::mat4(1.0f);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
 	view = glm::rotate(view, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -127,22 +127,22 @@ int main()
 	shader.setUniform("view", glm::value_ptr(view));
 	shader.setUniform("projection", glm::value_ptr(projection));
 
-	// ЦИКЛ РЕНДЕРИНГА	
+	// Р¦РРљР› Р Р•РќР”Р•Р РРќР“Рђ	
 	while (!glfwWindowShouldClose(window))
 	{
-		// Создание заднего буфера (color buffer'а) для рендеринга
+		// РЎРѕР·РґР°РЅРёРµ Р·Р°РґРЅРµРіРѕ Р±СѓС„РµСЂР° (color buffer'Р°) РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР°
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Рендер плоскости
+		// Р РµРЅРґРµСЂ РїР»РѕСЃРєРѕСЃС‚Рё
 		shader.setUniform("time", (float)glfwGetTime());
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		planar.rotate(5 * glfwGetTime(), vec3(0.0f, 1.0f, 0.0f));
 		planar.render(GL_TRIANGLES, GL_UNSIGNED_INT);
 
-		// Проверка различных вызовов от пользователя (клавиатура, мышка)
+		// РџСЂРѕРІРµСЂРєР° СЂР°Р·Р»РёС‡РЅС‹С… РІС‹Р·РѕРІРѕРІ РѕС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (РєР»Р°РІРёР°С‚СѓСЂР°, РјС‹С€РєР°)
 		glfwPollEvents();
-		// Смена color buffer'ов (обновление цвета каждого пикселя)
+		// РЎРјРµРЅР° color buffer'РѕРІ (РѕР±РЅРѕРІР»РµРЅРёРµ С†РІРµС‚Р° РєР°Р¶РґРѕРіРѕ РїРёРєСЃРµР»СЏ)
 		glfwSwapBuffers(window);
 	}
 
