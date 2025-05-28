@@ -24,9 +24,15 @@
     <ClCompile Include="shader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

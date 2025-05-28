@@ -1,7 +1,11 @@
-#include <glad/glad.h>
+п»ї#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include "shader.h"
+#include "entity.h"
+
 #include <iostream>
+#include <vector>
 using namespace std;
 
 #include <glm/glm.hpp>
@@ -16,128 +20,131 @@ void framebufferSizeCallback(GLFWwindow* window, GLint width, GLint height);
 
 int main()
 {
-	// ИНИЦИАЛИЗАЦИЯ ОКНА ПРОГРАММЫ
+	// РРќРР¦РРђР›РР—РђР¦РРЇ РћРљРќРђ РџР РћР“Р РђРњРњР«
 	glfwInit();
 	/**
-		КОНФИГУРАЦИЯ ОКНА ПРОГРАММЫ
-		Полный список параметроы:
+		РљРћРќР¤РР“РЈР РђР¦РРЇ РћРљРќРђ РџР РћР“Р РђРњРњР«
+		РџРѕР»РЅС‹Р№ СЃРїРёСЃРѕРє РїР°СЂР°РјРµС‚СЂРѕС‹:
 			https://www.glfw.org/docs/latest/window.html#window_hints
 	**/
-	// Для совместимости со старными драйверами используем min возможную версию OpenGL 3.3
+	// Р”Р»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё СЃРѕ СЃС‚Р°СЂРЅС‹РјРё РґСЂР°Р№РІРµСЂР°РјРё РёСЃРїРѕР»СЊР·СѓРµРј min РІРѕР·РјРѕР¶РЅСѓСЋ РІРµСЂСЃРёСЋ OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Используем более низкоуровнений инструментарий OpenGL (Core)
+	// РСЃРїРѕР»СЊР·СѓРµРј Р±РѕР»РµРµ РЅРёР·РєРѕСѓСЂРѕРІРЅРµРЅРёР№ РёРЅСЃС‚СЂСѓРјРµРЅС‚Р°СЂРёР№ OpenGL (Core)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// СОЗДАНИЕ ОКНА ПРОГРАММЫ
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Test", NULL, NULL);
+	// РЎРћР—Р”РђРќРР• РћРљРќРђ РџР РћР“Р РђРњРњР«
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "ArchEngine", NULL, NULL);
 	if (window == nullptr)
 	{
-		cout << "[ERROR] Не удалось создать окно программы" << endl;
+		cout << "[ERROR] РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РѕРєРЅРѕ РїСЂРѕРіСЂР°РјРјС‹" << endl;
 		glfwTerminate();
 		return 1;
 	}
-	// Создаем контекст для OpenGL
+	// РЎРѕР·РґР°РµРј РєРѕРЅС‚РµРєСЃС‚ РґР»СЏ OpenGL
 	glfwMakeContextCurrent(window);
 
-	// ИНИЦИАЛИЗАЦИЯ GLAD
+	// РРќРР¦РРђР›РР—РђР¦РРЇ GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		cout << "[ERROR] Не удалось инициализировать GLAD" << endl;
+		cout << "[ERROR] РќРµ СѓРґР°Р»РѕСЃСЊ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ GLAD" << endl;
 		return 1;
 	}
 
-	// ОБЛАСТЬ РЕНДЕРИНГА для OpenGL (на все окно программы)
+	// РћР‘Р›РђРЎРўР¬ Р Р•РќР”Р•Р РРќР“Рђ РґР»СЏ OpenGL (РЅР° РІСЃРµ РѕРєРЅРѕ РїСЂРѕРіСЂР°РјРјС‹)
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+	glEnable(GL_DEPTH_TEST);
+
 	// ---------------------------------------------------------------
-
-	// Вершины треугольника
-	GLfloat vertices[] = 
-	{
-		// Координаты вершин:	// Цвет вершин:
-		-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f, // левая нижнняя
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f, // правая нижняя
-		 0.0f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f  // верхняя
-	};
-	// Индексы выршин (поряд их отрисовки)
-	GLuint indices[] = { 0, 1, 2 };
-
-	// VAO
-	// Создаем новый vertex array object
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// VBO
-	// Создаем новый буфер vertex buffer object
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	// Привызываем его к GL_ARRAY_BUFFER
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// Копируем данные (коодринаты вершин) в vertex buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// EBO
-	// Создаем новый буфер element buffer object
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	// Привызываем его к GL_ELEMENT_ARRAY_BUFFER
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// Копируем данные (порядок отрисовки вершин) в vertex buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	/** РАЗМЕТКА АТТРИБУТОВ
-		index: индекс аттрибута (location = 0)
-		size: размер аттрибута (vec3)
-		type: тип данных (float)
-		normilized: нормировка данных (false, т.к. координаты уже от -1 до 1)
-		stride: размер сдвига к аттрибутам следующей вершины
-		pointer: начальное смещение до первого аттрибута данного индекса
-	**/
-	// Аттрибут позиции
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// Аттрибут цвета
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// SHADER
 	Shader shader("vertex.vert", "fragment.frag");
+	
+	// TRIANGLE
+	vector<vertex> vertices =
+	{
+		vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f)), // Р»РµРІР°СЏ РЅРёР¶РЅРЅСЏСЏ
+		vertex(vec3(0.5f, -0.5f, 0.0f),  vec3(0.0f, 1.0f, 0.0f)), // РїСЂР°РІР°СЏ РЅРёР¶РЅСЏСЏ
+		vertex(vec3(0.0f,  0.5f, 0.0f),  vec3(0.0f, 0.0f, 1.0f))  // РІРµСЂС…РЅСЏСЏ
+	};
+	vector<GLuint> indices = { 0, 1, 2 };
+
+	Entity triangle(vertices, indices);
+	triangle.linkShader(&shader);
+
+	// PLANAR
+	const int RESOLUTION_X = 100;
+	const int RESOLUTION_Z = 100;
+
+	vector<vertex> planarVertices;
+	for (int z = 0; z < RESOLUTION_Z; z++) {
+		for (int x = 0; x < RESOLUTION_X; x++) {
+			planarVertices.push_back(vertex(
+				vec3(2 * float(x) / RESOLUTION_X - 1, 0.0f, 2 * float(z) / RESOLUTION_Z - 1),
+				vec3(1.0f, 1.0f, 1.0f))
+			);
+		}
+	}
+
+	vector<GLuint> planarIndices;
+	for (int z = 0; z < RESOLUTION_Z - 1; z++) {
+		for (int x = 0; x < RESOLUTION_X - 1; x++) {
+			GLuint current = z * RESOLUTION_X + x;
+			GLuint future = (z + 1) * RESOLUTION_X + x;
+
+			GLuint i0 = current;
+			GLuint i1 = current + 1;
+			GLuint i2 = future;
+			GLuint i3 = future + 1;
+
+			if ((x + z) % 2) {
+				planarIndices.push_back(i0); planarIndices.push_back(i1); planarIndices.push_back(i3);
+				planarIndices.push_back(i3); planarIndices.push_back(i2); planarIndices.push_back(i0);
+			}
+			else {
+				planarIndices.push_back(i0); planarIndices.push_back(i2); planarIndices.push_back(i1);
+				planarIndices.push_back(i1); planarIndices.push_back(i3); planarIndices.push_back(i2);
+			}
+		}
+	}
+
+	Entity planar(planarVertices, planarIndices);
+	planar.linkShader(&shader);
 
 	// ---------------------------------------------------------------
 
-	// ЦИКЛ РЕНДЕРИНГА
+	shader.use();
+	// РќР°СЃС‚СЂРѕР№РєР° uniform-РїРµСЂРµРјРµРЅРЅС‹С…
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
+	view = glm::rotate(view, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+
+	shader.setUniform("view", glm::value_ptr(view));
+	shader.setUniform("projection", glm::value_ptr(projection));
+
+	// Р¦РРљР› Р Р•РќР”Р•Р РРќР“Рђ	
 	while (!glfwWindowShouldClose(window))
 	{
-		// Создание заднего буфера (color buffer'а) для рендеринга
-		glClear(GL_COLOR_BUFFER_BIT);
+		// РЎРѕР·РґР°РЅРёРµ Р·Р°РґРЅРµРіРѕ Р±СѓС„РµСЂР° (color buffer'Р°) РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР°
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
+		// Р РµРЅРґРµСЂ РїР»РѕСЃРєРѕСЃС‚Рё
+		shader.setUniform("time", (float)glfwGetTime());
 
-		// Обновление матрицы вращения
-		mat4 transform = mat4(1.0f);
-		transform = rotate(transform, (float)abs(glfwGetTime()), vec3(1.0f, 0.0f, 0.0f));
-		shader.setMat4f("transform", glm::value_ptr(transform));
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		planar.rotate(5 * glfwGetTime(), vec3(0.0f, 1.0f, 0.0f));
+		planar.render(GL_TRIANGLES, GL_UNSIGNED_INT);
 
-		// Отрисовка треугольника
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(float), GL_UNSIGNED_INT, 0);
-
-		// Проверка различных вызовов от пользователя (клавиатура, мышка)
+		// РџСЂРѕРІРµСЂРєР° СЂР°Р·Р»РёС‡РЅС‹С… РІС‹Р·РѕРІРѕРІ РѕС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (РєР»Р°РІРёР°С‚СѓСЂР°, РјС‹С€РєР°)
 		glfwPollEvents();
-		// Смена color buffer'ов (обновление цвета каждого пикселя)
+		// РЎРјРµРЅР° color buffer'РѕРІ (РѕР±РЅРѕРІР»РµРЅРёРµ С†РІРµС‚Р° РєР°Р¶РґРѕРіРѕ РїРёРєСЃРµР»СЏ)
 		glfwSwapBuffers(window);
 	}
-
-	// Освобождение памяти (не обязательно)
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
 
 	glfwTerminate();
 	return 0;
